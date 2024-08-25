@@ -1,0 +1,46 @@
+
+---
+
+### **`RemoveHTMLTags.txt`**
+
+```vba
+Sub RemoveHTMLTags()
+
+    ' Declare basic set of variables to perform the HTML Tag Cleanup in Scanned range
+    Dim ws As Worksheet
+    Dim rng As Range
+    Dim cell As Range
+    Dim regEx As Object
+    Dim strInput As String
+    Dim strOutput As String
+
+    ' Set the worksheet variable to the active sheet
+    Set ws = ActiveSheet
+    
+    ' Establish the data range with the used range object
+    Set rng = ws.UsedRange
+    
+    ' Create the regular expression object
+    Set regEx = CreateObject("VBScript.RegExp")
+    With regEx
+        .Global = True
+        .MultiLine = True
+        .IgnoreCase = True
+        .Pattern = "<.*?>"
+    End With
+
+    ' Loop through each cell in the declared data range variable
+    For Each cell In rng
+        strInput = cell.Value
+        If regEx.test(strInput) Then
+            strOutput = regEx.Replace(strInput, "")
+            cell.Value = strOutput
+        End If
+    Next cell
+
+    ' Clean up the established values
+    Set regEx = Nothing
+    Set rng = Nothing
+    Set ws = Nothing
+
+End Sub
