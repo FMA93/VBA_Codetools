@@ -38,6 +38,18 @@ End Sub
 
 Feel free to contribute to this repository by submitting issues or pull requests. Contributions that add new features or improve existing code are always welcome!
 
+5. Showing Userform
+
+- In order to work efficiently the VBA Userform has to be set in VBModeless:
+
+Example:
+```vba
+Private Sub btnOpenForm_Click()
+FormDemo.Show vbModeless
+End Sub
+```
+
+
 ## License
 
 This project is licensed under the MIT License - see the `LICENSE` file for details.
