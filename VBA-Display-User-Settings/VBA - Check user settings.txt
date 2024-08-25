@@ -1,0 +1,99 @@
+Private Sub Workbook_Open()
+
+    Dim ws As Worksheet
+    Dim wshNetwork As Object
+    Dim outlookApp As Object
+    Dim userEmail As String
+    Dim osVersion As String
+    Dim officeVersion As String
+    Dim officeLanguage As Long
+    Dim regionalSettings As String
+    Dim screenResolution As String
+    
+    ' Set the worksheet to the active sheet
+    Set ws = ActiveSheet
+
+    ' Clear existing content on the worksheet
+    ws.Cells.Clear
+
+    ' Create an instance of WScript.Network
+    Set wshNetwork = CreateObject("WScript.Network")
+
+    ' Set labels in column A
+    ws.Range("A1").Value = "Username (Excel)"
+    ws.Range("A2").Value = "Windows Username"
+    ws.Range("A3").Value = "User Domain"
+    ws.Range("A4").Value = "Computer Name"
+    ws.Range("A5").Value = "User Profile Path"
+    ws.Range("A6").Value = "Home Drive"
+    ws.Range("A7").Value = "Home Path"
+    ws.Range("A8").Value = "Computer Name (Environment)"
+    ws.Range("A9").Value = "User Email Address (Outlook)"
+    ws.Range("A10").Value = "Operating System Version"
+    ws.Range("A11").Value = "Office Version"
+    ws.Range("A12").Value = "Office Language"
+    ws.Range("A13").Value = "Regional Settings"
+    ws.Range("A14").Value = "Screen Resolution"
+
+    ' Set values in column B
+    ws.Range("B1").Value = Application.userName ' Excel Username
+    ws.Range("B2").Value = Environ("USERNAME") ' Windows Username
+    ws.Range("B3").Value = Environ("USERDOMAIN") ' User Domain
+    ws.Range("B4").Value = Environ("COMPUTERNAME") ' Computer Name from Environ
+    ws.Range("B5").Value = Environ("USERPROFILE") ' User Profile Path
+    ws.Range("B6").Value = Environ("HOMEDRIVE") ' Home Drive
+    ws.Range("B7").Value = Environ("HOMEPATH") ' Home Path
+    ws.Range("B8").Value = wshNetwork.ComputerName ' Computer Name from WScript.Network
+
+    ' Try to get the user's email address via Outlook
+    On Error Resume Next
+    Set outlookApp = GetObject(, "Outlook.Application")
+    If Not outlookApp Is Nothing Then
+        userEmail = outlookApp.Session.CurrentUser.AddressEntry.GetExchangeUser().PrimarySmtpAddress
+    Else
+        userEmail = "Email not available"
+    End If
+    On Error GoTo 0
+    ws.Range("B9").Value = userEmail ' User Email Address
+
+    ' Get the Operating System version
+    osVersion = CreateObject("WScript.Shell").RegRead("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProductName")
+    ws.Range("B10").Value = osVersion ' OS Version
+
+    ' Get the Office version
+    officeVersion = Application.Version
+    ws.Range("B11").Value = officeVersion ' Office Version
+
+    ' Get the Office language using the LCID (Locale Identifier)
+    officeLanguage = CLng(Application.LanguageSettings.LanguageID(msoLanguageIDUI))
+    ws.Range("B12").Value = GetLanguageName(officeLanguage) ' Office Language
+
+    ' Get the Regional Settings
+    regionalSettings = Environ("LANG")
+    ws.Range("B13").Value = regionalSettings ' Regional Settings
+
+    ' Get the Screen Resolution
+    screenResolution = Application.UsableWidth & "x" & Application.UsableHeight
+    ws.Range("B14").Value = screenResolution ' Screen Resolution
+
+    ' Adjust column width for better readability
+    ws.Columns("A:B").AutoFit
+
+    ' Clean up
+    Set wshNetwork = Nothing
+    Set outlookApp = Nothing
+End Sub
+
+
+
+Function GetLanguageName(lcid As Long) As String
+    Dim locale As Object
+    On Error Resume Next
+    Set locale = CreateObject("MSForms.Globalization")
+    GetLanguageName = locale.Language(lcid)
+    If Err.Number <> 0 Then
+        GetLanguageName = "Unknown Language"
+    End If
+    On Error GoTo 0
+End Function
+
