@@ -1,4 +1,3 @@
-```markdown
 # HexBreaker Tech - The Tome of System Insights
 
 ## Description
