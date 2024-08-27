@@ -1,4 +1,4 @@
-# HexBreaker Tech - The Tome of System Insights
+# HexBreaker Tech - A VBA Tome of System Insights
 
 ## Description
 
